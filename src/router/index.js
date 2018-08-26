@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from 'pages/home/Home'
-import Music from 'pages/music/Music'
+import Recommend from 'pages/recommend/Recommend'
 import MusicVideo from 'pages/mv/MusicVideo'
 import User from 'pages/user/User'
 import Search from 'pages/search/Search'
@@ -18,13 +18,13 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      redirect: '/music',
+      redirect: '/recommend',
       component: Home,
       children: [
         {
-          path: '/music',
-          name: 'Music',
-          component: Music
+          path: '/recommend',
+          name: 'Recommend',
+          component: Recommend
         },
         {
           path: '/mv',

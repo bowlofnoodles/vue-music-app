@@ -5,7 +5,7 @@
     <router-link tag="span" to="/mv">
       &#xe667;
     </router-link>
-    <router-link tag="span" to="/music">
+    <router-link tag="span" to="/recommend">
       &#xe9d5;
     </router-link>
     <router-link tag="span" to="/user">
@@ -31,6 +31,7 @@ export default {
     font-size: .74rem
   .header
     display: flex
+    z-index: 99
     header-fixed()
     .slider-icon
       padding: 0 .26rem

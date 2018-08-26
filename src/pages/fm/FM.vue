@@ -1,12 +1,12 @@
 <template>
-<div class="">
-  <h2>暂时没想做视频这块东西</h2>
+<div>
+电台页面
 </div>
 </template>
 
 <script>
 export default {
-  name: 'MusicVideo'
+  name: 'FM'
 }
 </script>
 

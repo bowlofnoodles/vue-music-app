@@ -1,22 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import state from './state'
+import * as actions from './actions'
+import * as getters from './getters'
+import mutations from './mutations'
 Vue.use(Vuex)
 
+const debug = process.env.NODE_ENV !== 'production'
+
 export default new Vuex.Store({
-  state: {
-    searchKey: '',
-    showSearchRes: false,
-    searchHistory: []
-  },
-  mutations: {
-    changeSearchKey (state, searchKey) {
-      state.searchKey = searchKey
-    },
-    changeShowRes (state) {
-      state.showSearchRes = true
-    },
-    pushNewHisItem (state, value) {
-      state.searchHistory.push(value)
-    }
-  }
+  state,
+  actions,
+  getters,
+  mutations,
+  strict: debug
 })

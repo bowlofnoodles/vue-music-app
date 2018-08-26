@@ -1,0 +1,5 @@
+export const SET_SEARCH_KEY = 'SET_SEARCH_KEY'
+
+export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'
+
+export const SET_SHOW_RESULT = 'SET_SHOW_RESULT'
