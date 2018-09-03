@@ -16,3 +16,12 @@ export function getCatList () {
   const url = `${URL}/playlist/catlist`
   return axios.get(url)
 }
+
+export function getMusicListDetail (id) {
+  const url = `${URL}/playlist/detail`
+  return axios.get(url, {
+    params: {
+      id
+    }
+  })
+}

@@ -4,8 +4,8 @@
     <li class="item" v-for="(item, id) of list" :key="item.id" @click="playMusic(item.id)">
       <div class="range">{{id+1}}</div>
       <div class="info">
-        <p class="name">{{item.name}}<span class="alias" v-if="item.song.alias.length">({{item.song.alias[0]}})</span></p>
-        <div class="desc">{{item.concatArtists}} - {{item.song.album.name}}</div>
+        <p class="name">{{item.name}}<span class="alias" v-if="item.alias.length">({{item.alias[0]}})</span></p>
+        <div class="desc">{{item.concatArtists}} - {{item.album}}</div>
       </div>
       <div class="icon-wrap">
         <span class="iconfont mv-icon">&#xe667;</span>
@@ -42,7 +42,7 @@ export default {
     list () {
       if (this.list) {
         this.list.forEach((val) => {
-          val.concatArtists = this.concatSingers(val.song.artists)
+          val.concatArtists = this.concatSingers(val.artists)
         })
       }
     }
@@ -61,8 +61,8 @@ export default {
     height: 1.8rem
     border-bottom: 1px solid $border-color
     .range
-      width: .32rem
-      padding: 0 .4rem
+      width: 1.12rem
+      text-align: center
       font-size: $font-size-medium
       color: $font-color-l
     .info

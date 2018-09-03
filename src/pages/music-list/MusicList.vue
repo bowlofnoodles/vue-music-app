@@ -4,7 +4,7 @@
   <scroll class="container"
     v-show="!showCate"
     :pullup="true"
-    @scrollToEnd = "getHotMusicList"
+    @scrollToEnd="getHotMusicList"
     ref="scroll"
   >
     <div>
@@ -182,9 +182,9 @@ export default {
         color: $theme-color
         z-index: 2
         .img-wrapper
-          width: 25%
+          width: 2.4rem
           height: 0
-          padding-bottom: 25%
+          padding-bottom: 2.4rem
           margin-left: .24rem
           .img
             width: 100%

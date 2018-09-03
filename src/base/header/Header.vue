@@ -1,7 +1,9 @@
 <template>
 <div class="header">
   <div class="iconfont back-icon" @click="back">&#xe623;</div>
-  <div class="middle-wrapper">{{this.title}}</div>
+  <div class="middle-wrapper">{{this.title}}
+    <slot></slot>
+  </div>
 </div>
 </template>
 
@@ -40,6 +42,8 @@ export default {
       padding: 0 .36rem
       font-size: .68rem
     .middle-wrapper
+      position: relative
       flex: 1
       font-size: $font-size-medium-x
+      no-wrap()
   </style>

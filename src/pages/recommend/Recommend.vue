@@ -89,6 +89,18 @@ export default {
     convertPlayCount (num) {
       return convertCount(num)
     },
+    getNewMusicSucc (data) {
+      data.forEach(item => {
+        item = item.song
+        this.newMusicList.push({
+          id: item.id,
+          name: item.name,
+          alias: item.alias,
+          album: item.album.name,
+          artists: item.artists
+        })
+      })
+    },
     playMusic (id) {
     }
   },
@@ -109,7 +121,7 @@ export default {
     })
     getNewMusic().then((res) => {
       if (res && res.data && res.data.result) {
-        this.newMusicList = res.data.result
+        this.getNewMusicSucc(res.data.result)
       }
     })
   }
