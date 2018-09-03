@@ -46,33 +46,8 @@
 </template>
 
 <script>
-import { getSearchByKey } from '@/api'
 export default {
-  name: 'SearchSongs',
-  data () {
-    return {
-      type: 1// 搜索歌曲
-    }
-  },
-  computed: {
-    searchKey () {
-      return this.$store.state.searchKey
-    }
-  },
-  mounted () {
-    console.log(this.searchKey)
-    console.log(this.type)
-    getSearchByKey({
-      keywords: this.searchKey,
-      type: this.type,
-      limit: 10
-    }).then((res) => {
-      if (res && res.data) {
-        let data = res.data.result
-        console.log(data)
-      }
-    })
-  }
+  name: 'SearchSongs'
 }
 </script>
 

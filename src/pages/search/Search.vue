@@ -1,14 +1,14 @@
 <template>
 <div>
   <search-header></search-header>
-  <div class="container" :class="{'fn-hide': showSearchRes}">
+  <div class="container">
     <router-link tag="div" to="/singer" class="iconfont singer border-bottom">
       &#xe600;<span>歌手分类</span>
     </router-link>
-    <search-hot :hot-list="hotList"></search-hot>
+    <search-hot></search-hot>
     <search-history></search-history>
   </div>
-  <div class="search-res" :class="{'fn-hide': !showSearchRes}">
+  <div class="search-res" style="display: none">
     <ul class="tab">
       <li class="tab-header">
         <router-link class="tab-header" to="/search/songs">单曲</router-link>
@@ -26,44 +26,21 @@
 </template>
 
 <script>
-import SearchHeader from './components/Header'
+import SearchHeader from 'base/search-header/SearchHeader'
 import SearchHot from './components/Hot'
 import SearchHistory from './components/History'
-import { getSearchHot } from '@/api'
 export default {
   name: 'Search',
   components: {
     SearchHeader,
     SearchHot,
     SearchHistory
-  },
-  data () {
-    return {
-      hotList: []
-    }
-  },
-  computed: {
-    showSearchRes () {
-      return this.$store.state.showSearchRes
-    }
-  },
-  methods: {
-  },
-  mounted () {
-    getSearchHot().then((res) => {
-      if (res && res.data) {
-        let data = res.data.result
-        this.hotList = data.hots
-      }
-    })
   }
 }
 </script>
 
 <style lang="stylus" scoped>
   @import '~common/style/variable.styl'
-  .fn-hide
-    display: none
   .container
     margin-top: $header-height
     .singer

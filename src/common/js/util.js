@@ -14,6 +14,6 @@ export function convertCount (num) {
   if (num + 0 < 100000) {
     return Math.floor(num)
   } else {
-    return (num / 10000).toFixed(1) + '万'
+    return Math.floor((num / 10000)) + '万'
   }
 }

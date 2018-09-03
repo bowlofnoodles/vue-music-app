@@ -12,12 +12,6 @@
       </swiper>
     </div>
     <div class="icon-wrapper">
-      <router-link tag="div" class="icon-item" to="/dailyrecommend">
-        <div class="icon-type">
-          <span class="iconfont">&#xe652;</span>
-        </div>
-        <p class="icon-title">每日推荐</p>
-      </router-link>
       <router-link tag="div" class="icon-item" to="/rank">
         <div class="icon-type">
           <span class="iconfont">&#xe608;</span>
@@ -43,27 +37,20 @@
         <p class="icon-title">电台</p>
       </router-link>
     </div>
-    <h2 class="title">推荐歌单<span class="iconfont">&#xe617;</span></h2>
-    <div class="music-list-wrapper">
-      <div class="item" v-for="item of musicListData" :key="item.id">
-        <div class="img-wrapper">
-          <img :src="item.picUrl">
-          <div class="number"><span class="iconfont">&#xe885;</span>{{item.playCount}}</div>
-        </div>
-        <p class="desc">{{item.name}}</p>
-      </div>
-    </div>
+    <h2 class="title" @click="toMusicListPage">推荐歌单<span class="iconfont">&#xe617;</span></h2>
+    <music-list :music-list-data="this.musicListData" :showLoading="false"></music-list>
     <h2 class="title">最新音乐</h2>
-    <music-list :list="newMusicList"></music-list>
+    <song-list :list="newMusicList"></song-list>
   </div>
 </scroll>
 </template>
 
 <script>
 import MusicList from 'base/music-list/MusicList'
+import SongList from 'base/song-list/SongList'
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
-import { getBanner, getMusicList, getNewMusic } from 'api/recommend'
+import { getBanner, getRecMusicList, getNewMusic } from 'api/recommend'
 import { convertCount } from 'common/js/util'
 import { recMusicListLen } from 'common/js/config'
 import scroll from 'base/scroll/Scroll'
@@ -71,6 +58,7 @@ export default {
   name: 'Recommend',
   components: {
     MusicList,
+    SongList,
     swiper,
     swiperSlide,
     scroll
@@ -95,6 +83,9 @@ export default {
     }
   },
   methods: {
+    toMusicListPage () {
+      this.$router.push('/music-list')
+    },
     convertPlayCount (num) {
       return convertCount(num)
     },
@@ -108,7 +99,7 @@ export default {
         this.banners = banners
       }
     })
-    getMusicList().then((res) => {
+    getRecMusicList().then((res) => {
       if (res && res.data && res.data.result) {
         for (let i = 0; i < recMusicListLen; i++) {
           res.data.result[i].playCount = this.convertPlayCount(res.data.result[i].playCount)
@@ -154,7 +145,7 @@ export default {
     align-items: center
     border-bottom: 1px solid $border-color
     .icon-item
-      width: 20%
+      width: 25%
       text-align: center
       .icon-type
         display: flex
@@ -174,6 +165,7 @@ export default {
     margin: .6rem 0 .4rem .2rem
     .iconfont
       color: $font-color-l
+      padding-left: .12rem
   .music-list-wrapper
     display: flex
     flex-wrap: wrap
@@ -200,5 +192,6 @@ export default {
             padding-right: .04rem
       .desc
         margin: .2rem 0
+        line-height: 1.5
         ellipsis(2)
 </style>

@@ -6,7 +6,7 @@ export function getBanner () {
   return axios.get(url)
 }
 
-export function getMusicList () {
+export function getRecMusicList () {
   const url = `${URL}/personalized`
   return axios.get(url)
 }

@@ -6,10 +6,7 @@
 
 <script>
 export default {
-  name: 'SearchAlbums',
-  mounted () {
-    console.log(this.$store.state.searchKey)
-  }
+  name: 'SearchAlbums'
 }
 </script>
 

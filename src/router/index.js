@@ -5,7 +5,11 @@ import Recommend from 'pages/recommend/Recommend'
 import MusicVideo from 'pages/mv/MusicVideo'
 import User from 'pages/user/User'
 import Search from 'pages/search/Search'
-
+import Rank from 'pages/rank/Rank'
+import MusicList from 'pages/music-list/MusicList'
+import MusicListDetail from 'pages/music-list-detail/MusicListDetail'
+import Singer from 'pages/singer/Singer'
+import FM from 'pages/fm/FM'
 // Search
 import SearchSongs from 'pages/search/components/Songs'
 import SearchSingers from 'pages/search/components/Singers'
@@ -37,6 +41,31 @@ export default new Router({
           component: User
         }
       ]
+    },
+    {
+      path: '/rank',
+      name: 'Rank',
+      component: Rank
+    },
+    {
+      path: '/music-list',
+      name: 'MusicList',
+      component: MusicList
+    },
+    {
+      path: '/music-list-detail/:id',
+      name: 'MusicListDetail',
+      component: MusicListDetail
+    },
+    {
+      path: '/singer',
+      name: 'Singer',
+      component: Singer
+    },
+    {
+      path: '/fm',
+      name: 'FM',
+      component: FM
     },
     {
       path: '/search',

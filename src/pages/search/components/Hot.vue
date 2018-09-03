@@ -3,7 +3,7 @@
   <div class="title">热门搜索</div>
   <div class="hot-key-wrapper">
     <ul>
-      <li class="search-hot-key" v-for="(item, id) in hotList" :key="id">{{item.first}}</li>
+      <li class="search-hot-key"></li>
     </ul>
   </div>
 </div>
@@ -11,10 +11,7 @@
 
 <script>
 export default {
-  name: 'Hot',
-  props: {
-    hotList: Array
-  }
+  name: 'Hot'
 }
 </script>
 

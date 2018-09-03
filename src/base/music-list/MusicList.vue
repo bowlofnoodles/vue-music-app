@@ -1,50 +1,40 @@
 <template>
 <div>
-  <ul class="list">
-    <li class="item" v-for="(item, id) of list" :key="item.id" @click="playMusic(item.id)">
-      <div class="range">{{id+1}}</div>
-      <div class="info">
-        <p class="name">{{item.name}}<span class="alias" v-if="item.song.alias.length">({{item.song.alias[0]}})</span></p>
-        <div class="desc">{{item.concatArtists}} - {{item.song.album.name}}</div>
+  <div class="music-list-wrapper">
+    <div class="item" v-for="item of musicListData" :key="item.id" @click="showMusicDetail(item.id)">
+      <div class="img-wrapper">
+        <img :src="item.picUrl">
+        <div class="number"><span class="iconfont">&#xe885;</span>{{item.playCount}}</div>
       </div>
-      <div class="icon-wrap">
-        <span class="iconfont mv-icon">&#xe667;</span>
-        <span class="iconfont sel-icon">&#xe6b9;</span>
-      </div>
-    </li>
-  </ul>
+      <p class="desc">{{item.name}}</p>
+    </div>
+  </div>
+  <loading v-show="showLoading"></loading>
 </div>
 </template>
 
 <script>
+import Loading from 'base/loading/Loading'
 export default {
   name: 'MusicList',
-  props: {
-    list: Array,
-    default: []
+  components: {
+    Loading
   },
-  methods: {
-    concatSingers (singers) {
-      let result = ''
-      singers.forEach((val, index) => {
-        if (index === 0) {
-          result += val.name
-        } else {
-          result += `/${val.name}`
-        }
-      })
-      return result
+  props: {
+    showLoading: {
+      type: Boolean,
+      default: true
     },
-    playMusic (id) {
+    musicListData: {
+      type: Array,
+      default: function () {
+        return []
+      }
     }
   },
-  watch: {
-    list () {
-      if (this.list) {
-        this.list.forEach((val) => {
-          val.concatArtists = this.concatSingers(val.song.artists)
-        })
-      }
+  methods: {
+    showMusicDetail (id) {
+      this.$router.push(`/music-list-detail/${id}`)
     }
   }
 }
@@ -53,36 +43,47 @@ export default {
 <style lang="stylus" scoped>
   @import '~common/style/variable.styl'
   @import '~common/style/mixin.styl'
-  .hightlight
-    color: $highlight-color
-  .item
-    display: flex
-    align-items: center
-    height: 1.8rem
-    border-bottom: 1px solid $border-color
-    .range
-      width: .32rem
-      padding: 0 .4rem
-      font-size: $font-size-medium
-      color: $font-color-l
-    .info
+  .music-list-wrapper
+      display: flex
+      flex-wrap: wrap
+      justify-content: space-between
       overflow: hidden
-      flex: 1
-      .name
-        font-size: $font-size-medium
-        padding-bottom: .2rem
-        no-wrap()
-        .alias
-          padding-left: .08rem
-          color: $font-color-l
-      .desc
-        color: $font-color-l
-        no-wrap()
-    .icon-wrap
-      color: $font-color-tran-l
-      .mv-icon
-        font-size: .6rem
-        padding-right: .28rem
-      .sel-icon
-        font-size: .8rem
- </style>
+      margin: 0 .2rem
+      .item
+        width: 33%
+        .img-wrapper
+          position: relative
+          display: block
+          height: 0
+          padding-bottom: 100%
+          &:after
+            content: " "
+            position: absolute
+            left: 0
+            top: 0
+            width: 100%
+            height: .48rem
+            z-index: 2
+            background-image: linear-gradient(180deg,rgba(0,0,0,.2),transparent)
+          img
+            position: absolute
+            width: 100%
+            left: 0
+            top: 0
+            z-index: 1
+            border-radius: .1rem
+          .number
+            position: absolute
+            top: .1rem
+            right: .1rem
+            z-index: 3
+            font-size: .36rem
+            color: $theme-color
+            text-shadow()
+            .iconfont
+              padding-right: .04rem
+        .desc
+          margin: .2rem 0
+          line-height: 1.5
+          ellipsis(2)
+</style>

@@ -1,6 +1,6 @@
 <template>
 <div class="">
-  <h2>暂时没想做视频这块东西</h2>
+  <h2>mv页面</h2>
 </div>
 </template>
 
