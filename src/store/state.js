@@ -1,10 +1,10 @@
-// import { getSearch } from 'common/js/cache'
+import { playMode } from 'common/js/config'
 const state = {
-  searchKey: '',
-  showSearchRes: false,
   playing: false,
-  playingMusicId: ''
-  // historyList: getSearch()
+  fullScreen: false,
+  playlist: [],
+  sequenceList: [],
+  mode: playMode.sequence,
+  currentIndex: -1
 }
-
 export default state

@@ -97,11 +97,10 @@ export default {
           name: item.name,
           alias: item.alias,
           album: item.album.name,
+          picUrl: item.album.picUrl,
           artists: item.artists
         })
       })
-    },
-    playMusic (id) {
     }
   },
   created () {
@@ -132,7 +131,12 @@ export default {
   @import '~common/style/variable.styl'
   @import '~common/style/mixin.styl'
   .recommend
-    height: calc(100vh - 1.706667rem)
+    position: absolute
+    top: $header-height
+    bottom: 0
+    overflow: hidden
+    left: 0
+    right: 0
   .swiper-container >>> .swiper-pagination-bullet
     width: .2rem
     height: .2rem

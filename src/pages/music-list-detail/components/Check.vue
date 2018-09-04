@@ -102,11 +102,12 @@ export default {
     right: .4rem
     font-size: $font-size-medium
   .container
+    overflow: hidden
     position: absolute
-    left: 0
-    right: 0
     top: $header-height
     bottom: 0
+    left: 0
+    width: 100%
     margin-bottom: $header-height
     .item
       display: flex
@@ -144,7 +145,7 @@ export default {
     height: $header-height
     border-top: 1px solid $border-color
     background: $theme-color
-    z-index: 99
+    z-index: 100
     .item
       display: flex
       flex-direction: column

@@ -127,7 +127,8 @@ export default {
           name: item.name,
           alias: item.alia,
           artists: item.ar,
-          album: item.al.name
+          album: item.al.name,
+          picUrl: item.al.picUrl
         })
       })
       this.showLoading = false
