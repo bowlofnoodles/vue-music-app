@@ -13,7 +13,7 @@
             </div>
             <div class="info">
               <p class="name">{{name}}</p>
-              <p class="desc">{{desc}}</p>
+              <!-- <p class="desc">{{desc}}</p> -->
             </div>
           </div>
           <div class="icon-wrapper">
@@ -34,7 +34,7 @@
       </div>
       <loading v-show="showLoading"></loading>
       <div class="song-list" v-show="!showLoading">
-        <div class="title">
+        <div class="title" @click="handlePlayAll">
           <div class="iconfont play">&#xe611;</div>
           播放全部 (共{{songsCount}}首)
         </div>
@@ -54,6 +54,7 @@ import Check from './components/check'
 import { getMusicListDetail } from 'api/music-list'
 import Loading from 'base/loading/Loading'
 import { convertCount } from 'common/js/util'
+import { mapActions } from 'vuex'
 export default {
   name: 'MusicListDetail',
   components: {
@@ -105,6 +106,13 @@ export default {
         this.title = '歌单'
       }
     },
+    handlePlayAll () {
+      console.log(111)
+      this.selectPlay({
+        list: this.songListData,
+        index: 0
+      })
+    },
     getMusicListDetail (id) {
       getMusicListDetail(id).then((res) => {
         if (res && res.data && res.data.playlist) {
@@ -128,11 +136,15 @@ export default {
           alias: item.alia,
           artists: item.ar,
           album: item.al.name,
-          picUrl: item.al.picUrl
+          picUrl: item.al.picUrl,
+          dt: item.dt
         })
       })
       this.showLoading = false
-    }
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   mounted () {
     this.getMusicListDetail(this.id)
@@ -216,6 +228,7 @@ export default {
             padding-left: .4rem
             .name
               padding-bottom: .3rem
+              line-height: 1.5
               font-size: $font-size-medium
               color: $theme-color
             .desc

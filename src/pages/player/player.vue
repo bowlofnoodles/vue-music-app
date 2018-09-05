@@ -15,7 +15,7 @@
       <div class="middle">
         <div class="middle-l" ref="middleL">
           <div class="cd-wrapper" ref="cdWrapper">
-            <div class="cd play">
+            <div class="cd" :class="cdCls">
               <img class="image" :src="currentSong.picUrl">
             </div>
           </div>
@@ -31,14 +31,26 @@
       <div class="bottom">
         <div class="icon-wrapper">
           <!-- 收藏 -->
-          <!-- <div class="iconfont">&#xe602;</div> -->
+          <div class="iconfont">&#xe602;</div>
           <!-- 评论 -->
-          <!-- <div class="iconfont">&#xe63b;</div> -->
+          <div class="iconfont">&#xe63b;</div>
           <!-- 三点 -->
-          <!-- <div class="iconfont">&#xe6b9;</div> -->
+          <div class="iconfont three">&#xe6b9;</div>
         </div>
-        <div class="slider"></div>
-        <div class="play-icon-wrapper"></div>
+        <div class="progress-wrapper">
+          <span class="time time-l">{{format(currentTime)}}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar :percent="percent"></progress-bar>
+          </div>
+          <span class="time time-r">{{format(currentSong.dt/1000)}}</span>
+        </div>
+        <div class="play-icon-wrapper">
+          <div class="iconfont mode">&#xe609;</div>
+          <div class="iconfont prev" @click="prev">&#xe78a;</div>
+          <div class="iconfont play" @click="togglePlaying" v-html="playIcon"></div>
+          <div class="iconfont next" @click="next">&#xe7a5;</div>
+          <div class="iconfont play-list">&#xe601;</div>
+        </div>
       </div>
     </div>
     <div class="mini-player" v-show="!fullScreen" @click="open">
@@ -55,28 +67,57 @@
         &#xe601;
       </div>
     </div>
-    <audio :src="`http://music.163.com/song/media/outer/url?id=${currentSong.id}.mp3`" ref="audio" style="display: none"></audio>
+    <audio
+      :src="`http://music.163.com/song/media/outer/url?id=${currentSong.id}.mp3`"
+      ref="audio"
+      style="display: none"
+      @canplay="ready"
+      @error="error"
+      @timeupdate="updataTime"
+    >
+      </audio>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import ProgressBar from 'base/progress-bar/ProgressBar'
 export default {
   name: 'Player',
   components: {
+    ProgressBar
+  },
+  data () {
+    return {
+      songReady: false,
+      currentTime: 0
+    }
   },
   computed: {
+    cdCls () {
+      return this.playing ? 'play' : 'play pause'
+    },
     playIcon () {
-      return this.playing ? '&#xe60b;' : '&#xe653;'
+      return this.playing ? '&#xe60b;' : '&#xe9d8;'
+    },
+    percent () {
+      return this.currentTime / (this.currentSong.dt / 1000)
     },
     ...mapGetters([
       'fullScreen',
       'playlist',
       'currentSong',
-      'playing'
+      'playing',
+      'currentIndex'
     ])
   },
   methods: {
+    ready () {
+      this.songReady = true
+    },
+    error () {
+      this.songReady = true
+    },
     back () {
       this.setFullScreen(false)
     },
@@ -84,11 +125,60 @@ export default {
       this.setFullScreen(true)
     },
     togglePlaying () {
+      if (!this.songReady) {
+        return
+      }
       this.setPlayingState(!this.playing)
+    },
+    prev () {
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex - 1
+      if (index === -1) {
+        index = this.playlist.length - 1
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    next () {
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex + 1
+      if (index === this.playlist.length) {
+        index = 0
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    updataTime (e) {
+      this.currentTime = e.target.currentTime
+    },
+    format (time) {
+      time = Math.floor(time)
+      const minute = Math.floor(time / 60)
+      const second = this._pad(time % 60)
+      return `${minute}:${second}`
+    },
+    _pad (num, n = 2) {
+      let len = num.toString().length
+      while (len < n) {
+        num = '0' + num
+        len++
+      }
+      return num
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
-      setPlayingState: 'SET_PLAYING_STATE'
+      setPlayingState: 'SET_PLAYING_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
     })
   },
   watch: {
@@ -136,6 +226,8 @@ export default {
         transform: scale(2)
         filter: blur(30px)
       .header
+        postition: fixed
+        top: 0
         display: flex
         height: 1.6rem
         align-items: center
@@ -146,13 +238,15 @@ export default {
           font-size: .68rem
         .desc
           position: relative
-          flex: 1
           font-size: $font-size-medium
+          flex: 1
+          .name
+            no-wrap()
           .singer
             padding-top: .2rem
             font-size: $font-size-small
             color: #ccc
-            text-shadow()
+            no-wrap()
       .middle
         position: fixed
         width: 100%
@@ -178,7 +272,7 @@ export default {
               height: 100%
               box-sizing: border-box
               border-radius: 50%
-              border: 10px solid rgba(255, 255, 255, .1)
+              border: 8px solid rgba(255, 255, 255, .1)
               &.play
                 animation: rotate 20s linear infinite
               &.pause
@@ -190,6 +284,55 @@ export default {
                 width: 100%
                 height: 100%
                 border-radius: 50%
+      .bottom >>> .iconfont
+        font-size: .8rem
+      .bottom
+        position: fixed
+        bottom: 0
+        width: 100%
+        // background: #000
+        color: $theme-color
+        font-size: $font-size-medium-x
+        .icon-wrapper
+          display: flex
+          height: 1.4rem
+          justify-content: center
+          align-items: center
+          .iconfont
+            width: 2rem
+            text-align: center
+            &.three
+              font-size: 1.1rem
+              padding-bottom: .2rem
+        .progress-wrapper
+          display: flex
+          width: 80%
+          margin: 0 auto
+          align-items: center
+          justify-content: center
+          padding: .2rem 0
+          .time
+            color: $theme-color
+            font-size: $font-size-small-s
+            width: .8rem
+            &.time-l
+              padding-right: .08rem
+              text-align: left
+            &.time-r
+              padding-left: .08rem
+              text-align: right
+          .progress-bar-wrapper
+            flex: 1
+        .play-icon-wrapper
+          display: flex
+          height: 2rem
+          justify-content: space-around
+          align-items: center
+          padding-bottom: .6rem
+          .play
+            font-size: 1rem
+          .play-list
+            font-size: .88rem
     .mini-player
       position: fixed
       left: 0

@@ -98,7 +98,8 @@ export default {
           alias: item.alias,
           album: item.album.name,
           picUrl: item.album.picUrl,
-          artists: item.artists
+          artists: item.artists,
+          dt: item.dt
         })
       })
     }
