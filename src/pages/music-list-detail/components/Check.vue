@@ -9,8 +9,8 @@
         <li class="item" v-for="(item, index) of list" :key="item.id" @click="handleCheckItem(index)">
           <div class="iconfont check" ref="checkDOM">&#xe720;</div>
           <div class="info">
-            <p class="name">{{item.name}}<span class="alias" v-if="item.alias.length">({{item.alias[0]}})</span></p>
-            <div class="desc">{{item.concatArtists}} - {{item.album}}</div>
+            <p class="name">{{item.name}}<span class="alias" v-if="item.alias">({{item.alias}})</span></p>
+            <div class="desc">{{item.singers}} - {{item.album}}</div>
           </div>
         </li>
       </ul>

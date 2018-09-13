@@ -1,7 +1,14 @@
 <template>
 <div>
   <base-header :title="title" :router-back="true"></base-header>
-  <scroll class="container" :listenScroll="true" @scroll="handleScroll" :probeType="3" v-show="!showCheck">
+  <scroll
+    class="container"
+    :listenScroll="true"
+    @scroll="handleScroll"
+    :probeType="3"
+    v-show="!showCheck"
+    ref="scroll"
+  >
     <div>
       <div class="header-desc">
         <div class="bg-blur" :style="{background: `url(${backgroundImage})`}"></div>
@@ -13,7 +20,6 @@
             </div>
             <div class="info">
               <p class="name">{{name}}</p>
-              <!-- <p class="desc">{{desc}}</p> -->
             </div>
           </div>
           <div class="icon-wrapper">
@@ -34,9 +40,9 @@
       </div>
       <loading v-show="showLoading"></loading>
       <div class="song-list" v-show="!showLoading">
-        <div class="title" @click="handlePlayAll">
+        <div class="title" @click="random">
           <div class="iconfont play">&#xe611;</div>
-          播放全部 (共{{songsCount}}首)
+          随机播放全部 (共{{songsCount}}首)
         </div>
         <song-list :list="songListData"></song-list>
       </div>
@@ -55,8 +61,11 @@ import { getMusicListDetail } from 'api/music-list'
 import Loading from 'base/loading/Loading'
 import { convertCount } from 'common/js/util'
 import { mapActions } from 'vuex'
+import { createSong } from 'common/js/song'
+import { playlistMixin } from 'common/js/mixin'
 export default {
   name: 'MusicListDetail',
+  mixins: [playlistMixin],
   components: {
     BaseHeader,
     SongList,
@@ -94,6 +103,11 @@ export default {
         this.$refs.check.scrollRefresh()
       }
     },
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '1.4rem' : ''
+      this.$refs.scroll.$el.style.bottom = bottom
+      this.$refs.scroll.refresh()
+    },
     convertPlayCount (num) {
       return convertCount(num)
     },
@@ -106,11 +120,9 @@ export default {
         this.title = '歌单'
       }
     },
-    handlePlayAll () {
-      console.log(111)
-      this.selectPlay({
-        list: this.songListData,
-        index: 0
+    random () {
+      this.randomPlay({
+        list: this.songListData
       })
     },
     getMusicListDetail (id) {
@@ -130,20 +142,13 @@ export default {
       this.songsCount = data.tracks.length
       let tempData = data.tracks
       tempData.forEach(item => {
-        this.songListData.push({
-          id: item.id,
-          name: item.name,
-          alias: item.alia,
-          artists: item.ar,
-          album: item.al.name,
-          picUrl: item.al.picUrl,
-          dt: item.dt
-        })
+        this.songListData.push(createSong(item))
       })
       this.showLoading = false
     },
     ...mapActions([
-      'selectPlay'
+      'selectPlay',
+      'randomPlay'
     ])
   },
   mounted () {

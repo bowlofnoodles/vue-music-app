@@ -25,8 +25,10 @@ import BaseHeader from 'base/header/Header'
 import { getCatList } from 'api/music-list'
 import Loading from 'base/loading/Loading'
 import Scroll from 'base/scroll/Scroll'
+import { playlistMixin } from 'common/js/mixin'
 export default {
   name: 'Category',
+  mixins: [playlistMixin],
   props: {
     currentCat: {
       type: String
@@ -53,6 +55,13 @@ export default {
   methods: {
     back () {
       this.$emit('changeShowCate')
+    },
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '1.4rem' : ''
+      this.$refs.scroll.$el.style.bottom = bottom
+      setTimeout(() => {
+        this.$refs.scroll.refresh()
+      })
     },
     scrollRefresh () {
       setTimeout(() => {

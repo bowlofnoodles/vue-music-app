@@ -1,5 +1,5 @@
 <template>
-<scroll class="recommend">
+<scroll class="recommend" ref="recommend">
   <div>
     <div class="swiper-container">
       <swiper :options="swiperOption" v-if="showSwiper">
@@ -54,8 +54,11 @@ import { getBanner, getRecMusicList, getNewMusic } from 'api/recommend'
 import { convertCount } from 'common/js/util'
 import { recMusicListLen } from 'common/js/config'
 import scroll from 'base/scroll/Scroll'
+import { createSong } from 'common/js/song'
+import { playlistMixin } from 'common/js/mixin'
 export default {
   name: 'Recommend',
+  mixins: [playlistMixin],
   components: {
     MusicList,
     SongList,
@@ -86,21 +89,18 @@ export default {
     toMusicListPage () {
       this.$router.push('/music-list')
     },
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '1.4rem' : ''
+      this.$refs.recommend.$el.style.bottom = bottom
+      this.$refs.recommend.refresh()
+    },
     convertPlayCount (num) {
       return convertCount(num)
     },
     getNewMusicSucc (data) {
       data.forEach(item => {
         item = item.song
-        this.newMusicList.push({
-          id: item.id,
-          name: item.name,
-          alias: item.alias,
-          album: item.album.name,
-          picUrl: item.album.picUrl,
-          artists: item.artists,
-          dt: item.dt
-        })
+        this.newMusicList.push(createSong(item))
       })
     }
   },

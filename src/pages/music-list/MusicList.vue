@@ -46,6 +46,7 @@ import Loading from 'base/loading/Loading'
 import Category from './components/Category'
 import { getHotMusicList } from 'api/music-list'
 import { convertCount } from 'common/js/util'
+import { playlistMixin } from 'common/js/mixin'
 export default {
   components: {
     BaseHeader,
@@ -54,6 +55,7 @@ export default {
     Scroll,
     Loading
   },
+  mixins: [playlistMixin],
   data () {
     return {
       musicListData: [],
@@ -72,6 +74,11 @@ export default {
     },
     convertPlayCount (num) {
       return convertCount(num)
+    },
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '1.4rem' : ''
+      this.$refs.scroll.$el.style.bottom = bottom
+      this.$refs.scroll.refresh()
     },
     getHotMusicList (flag) {
       if (flag) {

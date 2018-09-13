@@ -9,27 +9,36 @@
         <div class="iconfont back-icon" @click="back">&#xe623;</div>
         <div class="desc">
           <div class="name">{{currentSong.name}}</div>
-          <div class="singer">{{currentSong.concatArtists}}<span class="iconfont">&#xe617;</span></div>
+          <div class="singer">{{currentSong.singers}}<span class="iconfont">&#xe617;</span></div>
         </div>
       </div>
-      <div class="middle">
-        <div class="middle-l" ref="middleL">
+      <div class="middle" @click="toggleShow">
+        <div class="middle-l" ref="middleL" v-show="!showLyric">
           <div class="cd-wrapper" ref="cdWrapper">
             <div class="cd" :class="cdCls">
               <img class="image" :src="currentSong.picUrl">
             </div>
           </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric">{{playingLyric}}</div>
+          </div>
         </div>
-        <!-- <scroll class="middle-r" ref="lyricList">
-          <div class="lyric-wrapper">
-            <div>
-              <p>一行一行歌词</p>
+        <scroll class="middle-r" ref="lyricList" v-show="showLyric" :data="currentLyric && currentLyric.lines">
+          <div>
+            <div class="lyric-wrapper" v-if="currentLyric && currentLyric.lines">
+              <p
+                class="text"
+                ref="lyricLine"
+                :class="{current: currentLineNum === index}"
+                v-for="(item, index) of currentLyric.lines"
+                :key="index"
+              >{{item.txt}}</p>
             </div>
           </div>
-        </scroll> -->
+        </scroll>
       </div>
       <div class="bottom">
-        <div class="icon-wrapper">
+        <div class="icon-wrapper" v-show="!showLyric">
           <!-- 收藏 -->
           <div class="iconfont">&#xe602;</div>
           <!-- 评论 -->
@@ -40,12 +49,12 @@
         <div class="progress-wrapper">
           <span class="time time-l">{{format(currentTime)}}</span>
           <div class="progress-bar-wrapper">
-            <progress-bar :percent="percent"></progress-bar>
+            <progress-bar :percent="percent" @percentChange="onProgressPercentChange"></progress-bar>
           </div>
-          <span class="time time-r">{{format(currentSong.dt/1000)}}</span>
+          <span class="time time-r">{{format(currentSong.duration/1000)}}</span>
         </div>
         <div class="play-icon-wrapper">
-          <div class="iconfont mode">&#xe609;</div>
+          <div class="iconfont mode" v-html="playMode" @click="changeMode"></div>
           <div class="iconfont prev" @click="prev">&#xe78a;</div>
           <div class="iconfont play" @click="togglePlaying" v-html="playIcon"></div>
           <div class="iconfont next" @click="next">&#xe7a5;</div>
@@ -59,7 +68,7 @@
       </div>
       <div class="music-desc">
         <p class="music-name">{{currentSong.name}}</p>
-        <p class="lyric">{{currentSong.concatArtists}}</p>
+        <p class="lyric">{{playingLyric ? playingLyric : currentSong.singers}}</p>
       </div>
       <div class="iconfont music-play" @click.stop="togglePlaying" v-html="playIcon">
       </div>
@@ -68,12 +77,13 @@
       </div>
     </div>
     <audio
-      :src="`http://music.163.com/song/media/outer/url?id=${currentSong.id}.mp3`"
+      :src="currentSong.url"
       ref="audio"
       style="display: none"
       @canplay="ready"
       @error="error"
-      @timeupdate="updataTime"
+      @timeupdate="updateTime"
+      @ended="end"
     >
       </audio>
   </div>
@@ -82,15 +92,24 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import ProgressBar from 'base/progress-bar/ProgressBar'
+import { playMode } from 'common/js/config'
+import { shuffle } from 'common/js/util'
+import scroll from 'base/scroll/Scroll'
+import Lyric from 'common/js/lyric-parser'
 export default {
   name: 'Player',
   components: {
-    ProgressBar
+    ProgressBar,
+    scroll
   },
   data () {
     return {
       songReady: false,
-      currentTime: 0
+      currentTime: 0,
+      showLyric: false,
+      currentLyric: null,
+      currentLineNum: 0,
+      playingLyric: ''
     }
   },
   computed: {
@@ -100,15 +119,20 @@ export default {
     playIcon () {
       return this.playing ? '&#xe60b;' : '&#xe9d8;'
     },
+    playMode () {
+      return this.mode === playMode.sequence ? '&#xe609;' : this.mode === playMode.loop ? '&#xe607;' : '&#xe67c;'
+    },
     percent () {
-      return this.currentTime / (this.currentSong.dt / 1000)
+      return this.currentTime / (this.currentSong.duration / 1000)
     },
     ...mapGetters([
       'fullScreen',
       'playlist',
       'currentSong',
       'playing',
-      'currentIndex'
+      'currentIndex',
+      'mode',
+      'sequenceList'
     ])
   },
   methods: {
@@ -124,42 +148,102 @@ export default {
     open () {
       this.setFullScreen(true)
     },
+    end () {
+      if (this.mode === playMode.loop) {
+        this.loop()
+      } else {
+        this.next()
+      }
+    },
+    loop () {
+      this.$refs.audio.currentTime = 0
+      this.$refs.audio.play()
+      if (this.currentLyric) {
+        this.currentLyric.seek(0)
+      }
+    },
     togglePlaying () {
       if (!this.songReady) {
         return
       }
       this.setPlayingState(!this.playing)
+      if (this.currentLyric) {
+        this.currentLyric.togglePlay()
+      }
+    },
+    toggleShow () {
+      this.showLyric = !this.showLyric
+      if (this.showLyric) {
+        setTimeout(() => {
+          this.$refs.lyricList.refresh()
+        }, 20)
+      }
     },
     prev () {
       if (!this.songReady) {
         return
       }
-      let index = this.currentIndex - 1
-      if (index === -1) {
-        index = this.playlist.length - 1
+      if (this.playing.length === 1) {
+        this.loop()
+      } else {
+        let index = this.currentIndex - 1
+        if (index === -1) {
+          index = this.playlist.length - 1
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.songReady = false
       }
-      this.setCurrentIndex(index)
-      if (!this.playing) {
-        this.togglePlaying()
-      }
-      this.songReady = false
     },
     next () {
       if (!this.songReady) {
         return
       }
-      let index = this.currentIndex + 1
-      if (index === this.playlist.length) {
-        index = 0
+      if (this.playlist.length === 1) {
+        this.loop()
+      } else {
+        let index = this.currentIndex + 1
+        if (index === this.playlist.length) {
+          index = 0
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.songReady = false
       }
+    },
+    updateTime (e) {
+      this.currentTime = e.target.currentTime
+    },
+    changeMode () {
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      let list = null
+      if (mode === playMode.random) {
+        list = shuffle(this.sequenceList)
+      } else {
+        list = this.sequenceList
+      }
+      this.resetCurrentIndex(list)
+      this.setPlaylist(list)
+    },
+    resetCurrentIndex (list) {
+      let index = list.findIndex(item => {
+        return item.id === this.currentSong.id
+      })
       this.setCurrentIndex(index)
+    },
+    onProgressPercentChange (percent) {
+      this.$refs.audio.currentTime = this.currentSong.duration / 1000 * percent
       if (!this.playing) {
         this.togglePlaying()
       }
-      this.songReady = false
-    },
-    updataTime (e) {
-      this.currentTime = e.target.currentTime
+      if (this.currentLyric) {
+        this.currentLyric.seek(this.currentSong.duration * percent)
+      }
     },
     format (time) {
       time = Math.floor(time)
@@ -175,18 +259,51 @@ export default {
       }
       return num
     },
+    getLyric () {
+      this.currentSong.getLyric().then(res => {
+        if (res) {
+          this.currentLyric = new Lyric(res, this.handleLyric)
+        }
+        if (this.playing) {
+          this.currentLyric.play()
+        }
+      }).catch(() => {
+        this.currentLyric = null
+        this.playingLyric = ''
+        this.currentLineNum = 0
+      })
+    },
+    handleLyric ({lineNum, txt}) {
+      this.currentLineNum = lineNum
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5]
+        this.$refs.lyricList.scrollToElement(lineEl, 1000)
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
+      this.playingLyric = txt
+    },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX'
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlaylist: 'SET_PLAYLIST'
     })
   },
   watch: {
-    currentSong () {
+    currentSong (newSong, oldSong) {
+      if (newSong.id === oldSong.id) {
+        return
+      }
+      if (this.currentLyric) {
+        this.currentLyric.stop()
+      }
       const audio = this.$refs.audio
       this.$nextTick(() => {
         audio.play()
       })
+      this.getLyric()
     },
     playing (newPlaying) {
       const audio = this.$refs.audio
@@ -252,20 +369,17 @@ export default {
         width: 100%
         top: 2rem
         bottom: 4rem
-        white-space: nowrap
         font-size: 0
         .middle-l
-          display: inline-block
-          vertical-align: top
           position: relative
           width: 100%
           height: 0
-          padding-top: 70%
+          padding-top: 80%
           .cd-wrapper
             position: absolute
-            left: 15%
+            left: 10%
             top: 0
-            width: 70%
+            width: 80%
             height: 100%
             .cd
               width: 100%
@@ -284,6 +398,36 @@ export default {
                 width: 100%
                 height: 100%
                 border-radius: 50%
+          .playing-lyric-wrapper
+            width: 100%
+            font-size: $font-size-small
+            padding-top: 1rem
+            .playing-lyric
+              width: 80%
+              margin: 0 auto
+              text-align: center
+              color: $theme-color
+              letter-spacing: 2px
+        .middle-r
+          width: 100%
+          height: 86%
+          box-sizing: border-box
+          margin-top: 1.4rem
+          overflow: hidden
+          color: #ccc
+          .lyric-wrapper
+            width: 80%
+            margin: 0 auto
+            .text
+              padding: .34rem 0
+              word-break: keep-all
+              word-wrap: break-word
+              overflow: hidden
+              font-size: $font-size-small
+              letter-spacing: 2px
+              text-align: center
+              &.current
+                color: $theme-color
       .bottom >>> .iconfont
         font-size: .8rem
       .bottom
@@ -353,11 +497,14 @@ export default {
           width: 100%
       .music-desc
         flex: 1
+        overflow: hidden
         margin-left: .2rem
         .music-name
           padding-bottom: .2rem
         .lyric
           color: $font-color-l
+          font-size: $font-size-small-s
+          no-wrap()
       .music-play
         width: .8rem
         padding-right: .6rem

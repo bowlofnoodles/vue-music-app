@@ -4,8 +4,8 @@
     <li class="item" v-for="(item, id) of list" :key="item.id" @click="selectItem(item, id)">
       <div class="range">{{id+1}}</div>
       <div class="info">
-        <p class="name">{{item.name}}<span class="alias" v-if="item.alias.length">({{item.alias[0]}})</span></p>
-        <div class="desc">{{item.concatArtists}} - {{item.album}}</div>
+        <p class="name">{{item.name}}<span class="alias" v-if="item.alia">({{item.alia}})</span></p>
+        <div class="desc">{{item.singers}} - {{item.album}}</div>
       </div>
       <div class="icon-wrap">
         <span class="iconfont mv-icon">&#xe667;</span>
@@ -17,8 +17,6 @@
 </template>
 
 <script>
-import { getMusicUrl } from 'api/music'
-import { findIndex } from 'common/js/util'
 import { mapActions } from 'vuex'
 export default {
   name: 'SongList',
@@ -27,50 +25,15 @@ export default {
     default: []
   },
   methods: {
-    concatSingers (singers) {
-      let result = ''
-      singers.forEach((val, index) => {
-        if (index === 0) {
-          result += val.name
-        } else {
-          result += `/${val.name}`
-        }
-      })
-      return result
-    },
     selectItem (item, index) {
       this.selectPlay({
         list: this.list,
         index
       })
     },
-    getMusicUrl (id) {
-      getMusicUrl(id.join(',')).then(res => {
-        if (res && res.data && res.data.data) {
-          this.getMusicUrlSucc(res.data.data)
-        }
-      })
-    },
-    getMusicUrlSucc (data) {
-      this.list.forEach((item) => {
-        item.url = data[findIndex(data, 'id', item.id)].url
-      })
-    },
     ...mapActions([
       'selectPlay'
     ])
-  },
-  watch: {
-    list () {
-      if (this.list.length) {
-        let id = []
-        this.list.forEach((val) => {
-          val.concatArtists = this.concatSingers(val.artists)
-          id.push(val.id)
-        })
-        this.getMusicUrl(id)
-      }
-    }
   }
 }
 </script>
