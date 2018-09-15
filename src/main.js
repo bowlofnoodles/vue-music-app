@@ -7,9 +7,13 @@ import store from './store'
 import 'lib-flexible/flexible.js'
 import 'common/style/index.styl'
 import fastClick from 'fastclick'
+import VueLazyload from 'vue-lazyload'
 Vue.config.productionTip = false
 
 fastClick.attach(document.body)
+Vue.use(VueLazyload, {
+  loading: require('common/images/default.jpg')
+})
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

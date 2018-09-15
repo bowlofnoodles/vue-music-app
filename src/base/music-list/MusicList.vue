@@ -3,7 +3,7 @@
   <div class="music-list-wrapper">
     <div class="item" v-for="item of musicListData" :key="item.id" @click="showMusicDetail(item.id)">
       <div class="img-wrapper">
-        <img :src="item.picUrl">
+        <img v-lazy="item.picUrl">
         <div class="number"><span class="iconfont">&#xe885;</span>{{item.playCount}}</div>
       </div>
       <p class="desc">{{item.name}}</p>

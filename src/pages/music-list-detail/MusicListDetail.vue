@@ -11,21 +11,21 @@
   >
     <div>
       <div class="header-desc">
-        <div class="bg-blur" :style="{background: `url(${backgroundImage})`}"></div>
+        <div class="bg-blur" :style="{background: `url(${this.musicListData.backgroundImage})`}"></div>
         <div class="desc-content">
           <div class="desc-wrapper">
             <div class="img-wrapper">
-              <img :src="picUrl"/>
-              <div class="number"><span class="iconfont">&#xe885;</span>{{playCount}}</div>
+              <img :src="this.musicListData.picUrl"/>
+              <div class="number"><span class="iconfont">&#xe885;</span>{{this.musicListData.playCount}}</div>
             </div>
             <div class="info">
-              <p class="name">{{name}}</p>
+              <p class="name">{{this.musicListData.name}}</p>
             </div>
           </div>
           <div class="icon-wrapper">
             <div class="icon-item">
               <div class="iconfont comment">&#xe63b;</div>
-              <span class="icon-info num">{{commentCount}}</span>
+              <span class="icon-info num">{{this.musicListData.commentCount === 0 ? '评论' :this.musicListData.commentCount}}</span>
             </div>
             <div class="icon-item">
               <div class="iconfont">&#xe602;</div>
@@ -42,13 +42,13 @@
       <div class="song-list" v-show="!showLoading">
         <div class="title" @click="random">
           <div class="iconfont play">&#xe611;</div>
-          随机播放全部 (共{{songsCount}}首)
+          随机播放全部 (共{{this.musicListData.songsCount}}首)
         </div>
-        <song-list :list="songListData"></song-list>
+        <song-list :list="this.musicListData.songListData"></song-list>
       </div>
     </div>
   </scroll>
-  <check v-show="showCheck" @changeShowCheck="changeShowCheck" ref="check" :list="songListData"></check>
+  <check v-show="showCheck" @changeShowCheck="changeShowCheck" ref="check" :list="this.musicListData.songListData ? this.musicListData.songListData : []"></check>
 </div>
 </template>
 
@@ -59,9 +59,8 @@ import Scroll from 'base/scroll/Scroll'
 import Check from './components/check'
 import { getMusicListDetail } from 'api/music-list'
 import Loading from 'base/loading/Loading'
-import { convertCount } from 'common/js/util'
 import { mapActions } from 'vuex'
-import { createSong } from 'common/js/song'
+import { createMusicList } from 'common/js/music-list'
 import { playlistMixin } from 'common/js/mixin'
 export default {
   name: 'MusicListDetail',
@@ -76,14 +75,7 @@ export default {
   data () {
     return {
       title: '歌单',
-      commentCount: '评论',
-      playCount: 0,
-      picUrl: '',
-      backgroundImage: '',
-      name: '',
-      desc: '',
-      songsCount: 0,
-      songListData: [],
+      musicListData: {},
       showLoading: true,
       showCheck: false
     }
@@ -108,21 +100,18 @@ export default {
       this.$refs.scroll.$el.style.bottom = bottom
       this.$refs.scroll.refresh()
     },
-    convertPlayCount (num) {
-      return convertCount(num)
-    },
     handleScroll (pos) {
       let htmlFontSize = document.documentElement.style.fontSize
       htmlFontSize = htmlFontSize.replace('px', '')
       if (Math.abs(pos.y) >= htmlFontSize * 4.8) {
-        this.title = this.name
+        this.title = this.musicListData.name
       } else {
         this.title = '歌单'
       }
     },
     random () {
       this.randomPlay({
-        list: this.songListData
+        list: this.musicListData.songListData
       })
     },
     getMusicListDetail (id) {
@@ -133,17 +122,7 @@ export default {
       })
     },
     getMusicListDetailSucc (data) {
-      this.commentCount = data.commentCount
-      this.playCount = this.convertPlayCount(data.playCount)
-      this.picUrl = data.coverImgUrl
-      this.backgroundImage = data.coverImgUrl
-      this.name = data.name
-      this.desc = data.description
-      this.songsCount = data.tracks.length
-      let tempData = data.tracks
-      tempData.forEach(item => {
-        this.songListData.push(createSong(item))
-      })
+      this.musicListData = createMusicList(data)
       this.showLoading = false
     },
     ...mapActions([
