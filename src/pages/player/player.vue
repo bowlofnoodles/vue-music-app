@@ -501,6 +501,7 @@ export default {
         margin-left: .2rem
         .music-name
           padding-bottom: .2rem
+          font-size: $font-size-small-s
           no-wrap()
         .lyric
           color: $font-color-l

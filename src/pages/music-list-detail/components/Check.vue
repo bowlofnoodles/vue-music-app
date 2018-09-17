@@ -125,12 +125,13 @@ export default {
         flex: 1
         .name
           font-size: $font-size-medium
-          padding-bottom: .2rem
+          padding-bottom: .1rem
           no-wrap()
           .alias
             padding-left: .08rem
             color: $font-color-l
         .desc
+          padding-top: .1rem
           color: $font-color-l
           no-wrap()
   .icon-wrapper

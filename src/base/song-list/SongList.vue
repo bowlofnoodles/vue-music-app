@@ -8,7 +8,7 @@
         <div class="desc">{{item.singers}} - {{item.album}}</div>
       </div>
       <div class="icon-wrap">
-        <span class="iconfont mv-icon">&#xe667;</span>
+        <!-- <span class="iconfont mv-icon">&#xe667;</span> -->
         <span class="iconfont sel-icon">&#xe6b9;</span>
       </div>
     </li>
@@ -58,12 +58,13 @@ export default {
       flex: 1
       .name
         font-size: $font-size-medium
-        padding-bottom: .2rem
+        padding-bottom: .1rem
         no-wrap()
         .alias
           padding-left: .08rem
           color: $font-color-l
       .desc
+        padding-top: .1rem
         color: $font-color-l
         no-wrap()
     .icon-wrap
