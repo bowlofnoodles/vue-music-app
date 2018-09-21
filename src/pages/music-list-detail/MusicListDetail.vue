@@ -24,7 +24,7 @@
           </div>
           <div class="icon-wrapper">
             <div class="icon-item">
-              <div class="iconfont comment">&#xe63b;</div>
+              <div class="iconfont comment" @click="turnToComment">&#xe63b;</div>
               <span class="icon-info num">{{this.musicListData.commentCount === 0 ? '评论' :this.musicListData.commentCount}}</span>
             </div>
             <div class="icon-item">
@@ -86,6 +86,15 @@ export default {
     }
   },
   methods: {
+    turnToComment () {
+      this.$router.push({
+        path: `/comment/playlist/${this.musicListData.id}`,
+        query: {
+          name: this.musicListData.name,
+          picUrl: this.musicListData.picUrl
+        }
+      })
+    },
     back () {
       this.$router.back()
     },

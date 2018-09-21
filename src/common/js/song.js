@@ -1,4 +1,5 @@
 import { checkSong, getLyric } from 'api/song'
+import { getComment } from 'api/comment'
 export default class Song {
   constructor ({id, name, alia, singers, album, picUrl, duration, url}) {
     this.id = id
@@ -28,6 +29,17 @@ export default class Song {
           reject(new Error('no lyric'))
         }
       })
+    })
+  }
+  getCommentCount () {
+    getComment({
+      type: 'music',
+      id: this.id
+    }).then(res => {
+      if (res) {
+        this.commentCount = res.total
+        return Promise.resolve(res.total)
+      }
     })
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="player" v-show="playlist.length > 0">
+  <div class="player" v-show="playlist.length > 0" ref="player">
     <!-- v-show="playlist.length > 0" -->
     <div class="normal-player" v-show="fullScreen">
       <div class="background">
@@ -42,7 +42,10 @@
           <!-- 收藏 -->
           <div class="iconfont">&#xe602;</div>
           <!-- 评论 -->
-          <div class="iconfont">&#xe63b;</div>
+          <div class="iconfont comment" @click="turnToComment">
+            &#xe63b;
+            <span class="comment-count">{{currentSong.commentCount || 0}}</span>
+          </div>
           <!-- 三点 -->
           <div class="iconfont three">&#xe6b9;</div>
         </div>
@@ -136,6 +139,16 @@ export default {
     ])
   },
   methods: {
+    turnToComment () {
+      this.$router.push({
+        path: `/comment/music/${this.currentSong.id}`,
+        query: {
+          name: this.currentSong.name,
+          singer: this.currentSong.singers,
+          picUrl: this.currentSong.picUrl
+        }
+      })
+    },
     ready () {
       this.songReady = true
     },
@@ -304,6 +317,7 @@ export default {
         audio.play()
       })
       this.getLyric()
+      newSong.getCommentCount()
     },
     playing (newPlaying) {
       const audio = this.$refs.audio
@@ -319,9 +333,11 @@ export default {
   @import '~common/style/variable.styl'
   @import '~common/style/mixin.styl'
   .player
-    position: relative
+    position: fixed
     width: 100%
     height: $header-height
+    bottom: 0
+    z-index: 100
     .normal-player
       overflow: hidden
       position: fixed
@@ -445,6 +461,13 @@ export default {
           .iconfont
             width: 2rem
             text-align: center
+            &.comment
+              position: relative
+              .comment-count
+                position: absolute
+                right: 46px
+                top: -22px
+                font-size: $font-size-small-s
             &.three
               font-size: 1.1rem
               padding-bottom: .2rem
