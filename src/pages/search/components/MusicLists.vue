@@ -1,6 +1,6 @@
 <template>
 <div class="">
-  搜索专辑
+  搜索歌单
 </div>
 </template>
 

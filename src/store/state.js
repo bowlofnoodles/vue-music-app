@@ -5,6 +5,7 @@ const state = {
   playlist: [],
   sequenceList: [],
   mode: playMode.sequence,
-  currentIndex: -1
+  currentIndex: -1,
+  showSearchRes: !!sessionStorage.show_search_res
 }
 export default state

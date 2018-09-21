@@ -14,7 +14,7 @@ export const searchType = {
   'song': 1,
   'album': 10,
   'singer': 100,
-  'songList': 1000,
+  'musicList': 1000,
   'mv': 1004,
   'fm': 1009
 }

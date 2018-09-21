@@ -17,6 +17,10 @@ const mutations = {
   },
   [types.SET_CURRENT_INDEX] (state, index) {
     state.currentIndex = index
+  },
+  [types.SET_SHOW_SEARCH_RES] (state, flag) {
+    state.showSearchRes = flag
+    sessionStorage.show_search_res = flag
   }
 }
 export default mutations

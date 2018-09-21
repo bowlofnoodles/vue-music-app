@@ -18,14 +18,14 @@ export default {
   },
   methods: {
     back () {
-      this.$router.back()
+      this.$router.push('/')
     },
     setQuery (query) {
       this.query = query
     },
     search () {
-      if (!this.searchKey) return
-      this.$emit('search', this.searchKey.trim())
+      if (!this.query) return
+      this.$emit('search', this.query.trim())
     },
     clear () {
       this.query = ''

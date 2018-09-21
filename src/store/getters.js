@@ -7,3 +7,4 @@ export const currentIndex = state => state.currentIndex
 export const currentSong = (state) => {
   return state.playlist[state.currentIndex] || {}
 }
+export const showSearchRes = state => state.showSearchRes

@@ -9,6 +9,7 @@ import Rank from 'pages/rank/Rank'
 import MusicList from 'pages/music-list/MusicList'
 import MusicListDetail from 'pages/music-list-detail/MusicListDetail'
 import FM from 'pages/fm/FM'
+import Comment from 'pages/comment/Comment'
 // Singer
 import Singer from 'pages/singer/Singer'
 
@@ -20,7 +21,8 @@ import Intro from 'pages/singer-detail/components/Intro'
 // Search
 import SearchSongs from 'pages/search/components/Songs'
 import SearchSingers from 'pages/search/components/Singers'
-import SearchAlbums from 'pages/search/components/Albums'
+import SearchMusicLists from 'pages/search/components/MusicLists'
+import { searchType } from 'common/js/config'
 
 Vue.use(Router)
 
@@ -72,10 +74,6 @@ export default new Router({
     {
       path: '/singercate',
       name: 'SingerCate',
-      query: {
-        initial: '',
-        cate: ''
-      },
       component: SingerCate
     },
     {
@@ -107,21 +105,35 @@ export default new Router({
       component: Search,
       children: [
         {
-          path: 'songs',
+          path: `${searchType.song}`,
+          params: {
+            type: searchType.song
+          },
           name: 'SearchSongs',
           component: SearchSongs
         },
         {
-          path: 'singers',
+          path: `${searchType.singer}`,
           name: 'SearchSingers',
+          params: {
+            type: searchType.song
+          },
           component: SearchSingers
         },
         {
-          path: 'albums',
-          name: 'SearchAlbums',
-          component: SearchAlbums
+          path: `${searchType.musicList}`,
+          name: 'SearchMusicLists',
+          params: {
+            type: searchType.song
+          },
+          component: SearchMusicLists
         }
       ]
+    },
+    {
+      path: '/comment/:type/:id',
+      name: Comment,
+      component: Comment
     }
   ]
 })

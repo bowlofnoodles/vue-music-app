@@ -1,82 +1,107 @@
 <template>
 <div>
-  <ul class="list">
-    <li class="item">
-      <div class="info">
-        <p class="name">海阔天空</p>
-        <div class="desc">Beyond - 华纳23周年纪念精选系列</div>
-      </div>
-      <div class="icon-wrap">
-        <span class="iconfont mv-icon">&#xe667;</span>
-        <span class="iconfont sel-icon">&#xe6b9;</span>
-      </div>
-    </li>
-    <li class="item">
-      <div class="info">
-        <p class="name">海阔天空</p>
-        <div class="desc">Beyond - 华纳23周年纪念精选系列</div>
-      </div>
-      <div class="icon-wrap">
-        <span class="iconfont mv-icon">&#xe667;</span>
-        <span class="iconfont sel-icon">&#xe6b9;</span>
-      </div>
-    </li>
-    <li class="item">
-      <div class="info">
-        <p class="name">海阔天空</p>
-        <div class="desc">Beyond - 华纳23周年纪念精选系列</div>
-      </div>
-      <div class="icon-wrap">
-        <span class="iconfont mv-icon">&#xe667;</span>
-        <span class="iconfont sel-icon">&#xe6b9;</span>
-      </div>
-    </li>
-    <li class="item">
-      <div class="info">
-        <p class="name">海阔天空</p>
-        <div class="desc">Beyond - 华纳23周年纪念精选系列</div>
-      </div>
-      <div class="icon-wrap">
-        <span class="iconfont mv-icon">&#xe667;</span>
-        <span class="iconfont sel-icon">&#xe6b9;</span>
-      </div>
-    </li>
-  </ul>
+  <scroll class="container" :data="songList">
+    <div>
+      <loading v-show="showLoading"></loading>
+      <song-list :list="songList" v-show="!showLoading"></song-list>
+      <p v-show="showNoRes" class="no-result">无搜索结果</p>
+    </div>
+  </scroll>
 </div>
 </template>
 
 <script>
+import { searchType } from 'common/js/config'
+import { getSearchByKey } from 'api/search'
+import SongList from 'base/song-list/SongList'
+import { getSongsDetail } from 'api/song'
+import Scroll from 'base/scroll/Scroll'
+import Loading from 'base/loading/Loading'
 export default {
-  name: 'SearchSongs'
+  name: 'SearchSongs',
+  components: {
+    SongList,
+    Scroll,
+    Loading
+  },
+  data () {
+    return {
+      limit: 20,
+      offset: 0,
+      type: searchType.song,
+      songList: [],
+      showLoading: true,
+      showNoRes: false
+    }
+  },
+  computed: {
+    keywords () {
+      return this.$route.query.keywords
+    }
+  },
+  methods: {
+    getSearchByKey () {
+      getSearchByKey({
+        limit: this.limit,
+        offset: this.offset,
+        type: this.type,
+        keywords: this.keywords
+      }).then(res => {
+        if (res && res.result && res.result.songs) {
+          let tempData = res.result.songs
+          let idArr = []
+          tempData.forEach(item => {
+            idArr.push(item.id)
+          })
+          this.getSongsDetail(idArr)
+        } else {
+          this.showLoading = false
+          this.showNoRes = true
+        }
+      })
+    },
+    getSongsDetail (id) {
+      getSongsDetail(id).then(res => {
+        this.showLoading = false
+        if (res) {
+          this.songList = res
+        } else {
+          this.showNoRes = true
+        }
+      })
+    }
+  },
+  mounted () {
+    if (this.keywords) {
+      this.getSearchByKey()
+    }
+  },
+  watch: {
+    keywords (newKey) {
+      if (newKey) {
+        this.showLoading = true
+        this.showNoRes = false
+        this.songList = []
+        this.getSearchByKey()
+      }
+    }
+  }
 }
 </script>
 
 <style lang="stylus" scoped>
   @import '~common/style/variable.styl'
   @import '~common/style/mixin.styl'
-  .hightlight
-    color: $highlight-color
-  .item
-    display: flex
-    align-items: center
-    height: 1.8rem
-    padding-left: .24rem
-    border-bottom: 1px solid $border-color
-    .info
-      overflow: hidden
-      flex: 1
-      .name
-        font-size: $font-size-medium
-        padding-bottom: .2rem
-        no-wrap()
-      .desc
-        color: $font-color-l
-        no-wrap()
-    .icon-wrap
-      color: $font-color-tran-l
-      .mv-icon
-        font-size: .6rem
-        padding-right: .28rem
-      .sel-icon
-        font-size: .8rem
+  .container
+    position: absolute
+    left: 0
+    right: 0
+    top: 2.5rem
+    bottom: 0
+    overflow: hidden
+    .no-result
+      height: 1.4rem
+      line-height: 1.4rem
+      text-align: center
+      letter-spacing: 2px
  </style>
