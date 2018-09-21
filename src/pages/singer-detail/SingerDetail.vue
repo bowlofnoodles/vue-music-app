@@ -10,11 +10,7 @@
       <router-link tag="div" :to="{name: 'HotSong'}" class="tab-item" :class="{current: currentTab == 'HotSong'}">热门演唱</router-link>
       <router-link tag="div" :to="{name: 'Intro'}" class="tab-item" :class="{current: currentTab == 'Intro'}">艺人信息</router-link>
     </div>
-    <scroll class="content" :listenScroll="true" :probe-type="3" @scroll="handleScroll" ref="content">
-      <div>
-        <router-view :singer="singer"></router-view>
-      </div>
-    </scroll>
+    <router-view :singer="singer" class="content"></router-view>
   </div>
 </div>
 </template>
@@ -54,11 +50,6 @@ export default {
     },
     handlePlaylist () {
 
-    },
-    handleScroll (pos) {
-      this.scrollY = pos.y
-      this.scrollY = Math.max(-515, pos.y)
-      // this.$refs.bgLayer.style['transform'] = `translate3d(0, ${this.scrollY}px, 0)`
     },
     getSinger () {
       getSinger(this.id).then(res => {
@@ -115,6 +106,7 @@ export default {
         color: $theme-color
         text-align: center
         letter-spacing: 6px
+
     .tab
       display: flex
       border-bottom: 1px solid $border-color

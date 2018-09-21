@@ -1,11 +1,12 @@
 <template>
-<div>
+<scroll>
   <song-list :list="singer.hotSongs"></song-list>
-</div>
+</scroll>
 </template>
 
 <script>
 import SongList from 'base/song-list/SongList'
+import Scroll from 'base/scroll/Scroll'
 export default {
   name: 'HotSong',
   props: {
@@ -14,7 +15,8 @@ export default {
     }
   },
   components: {
-    SongList
+    SongList,
+    Scroll
   }
 }
 </script>

@@ -1,23 +1,34 @@
 <template>
-<div>
-  <div class="brief">
-    <div class="title">{{singer.name}}简介</div>
-    <div class="txt">{{singer.briefDesc}}</div>
+<scroll ref="scroll">
+  <div>
+    <div class="brief">
+      <div class="title">{{singer.name}}简介</div>
+      <div class="txt">{{singer.briefDesc}}</div>
+    </div>
+    <div class="introduction" v-for="(item, index) of singer.introduction" :key="index">
+      <div class="title">{{item.ti}}</div>
+      <div class="txt" v-html="item.txt"></div>
+    </div>
   </div>
-  <div class="introduction" v-for="(item, index) of singer.introduction" :key="index">
-    <div class="title">{{item.ti}}</div>
-    <div class="txt" v-html="item.txt"></div>
-  </div>
-</div>
+</scroll>
 </template>
 
 <script>
+import Scroll from 'base/scroll/Scroll'
 export default {
   name: 'Intro',
   props: {
     singer: {
       type: Object
     }
+  },
+  components: {
+    Scroll
+  },
+  mounted () {
+    setTimeout(() => {
+      this.$refs.scroll.refresh()
+    }, 20)
   }
 }
 </script>
