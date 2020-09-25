@@ -24,7 +24,7 @@ git clone git@github.com:huahuazfh/vue-music-app.git
 cd vue-music-app
 
 # 安装项目所需依赖
-npm install dependencies
+npm install
 
 # 运行项目
 npm run dev
