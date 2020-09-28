@@ -18,7 +18,7 @@ vue2 + vuex + vue-router + vue-cli + es6 + stylus
 > Simple Music
 ``` bash
 # 下载项目到本地
-git clone git@github.com:huahuazfh/vue-music-app.git
+git clone git@github.com:bowlofnoodles/vue-music-app.git
 
 # 跳转目录
 cd vue-music-app
