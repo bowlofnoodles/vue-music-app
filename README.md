@@ -40,7 +40,7 @@ cd server/
 npm install
 
 # 开启接口代理服务 默认端口为3000
-node app.js
+npm start
 ```
 ## 部分截图
 <div align="center">
