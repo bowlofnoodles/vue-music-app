@@ -1,1 +1,1 @@
-export const URL = 'https://music-server.bowlofnoodles.top/backend'
+export const URL = 'https://api.bowlofnoodles.top/music'
