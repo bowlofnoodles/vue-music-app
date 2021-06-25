@@ -56,7 +56,7 @@
 import BaseHeader from 'base/header/Header'
 import SongList from 'base/song-list/SongList'
 import Scroll from 'base/scroll/Scroll'
-import Check from './components/check'
+import Check from './components/Check'
 import { getMusicListDetail } from 'api/music-list'
 import Loading from 'base/loading/Loading'
 import { mapActions } from 'vuex'
