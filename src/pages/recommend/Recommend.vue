@@ -5,7 +5,7 @@
       <swiper :options="swiperOption" v-if="showSwiper">
         <swiper-slide v-for="(item, id) of banners" :key="id">
           <a class="swiper-img-wrapper" :href="item.url">
-            <img :src="item.picUrl" class="swiper-img"/>
+            <img :src="item.imageUrl" class="swiper-img"/>
           </a>
         </swiper-slide>
         <div class="swiper-pagination"  slot="pagination"></div>
