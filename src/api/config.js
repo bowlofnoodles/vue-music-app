@@ -1,7 +1,7 @@
 const devPort = 3000
 
 const URLMapping = {
-  production: 'https://api.bowlofnoodles.top/music',
+  production: 'https://music-api.bowlofnoodles.top',
   development: `http://localhost:${devPort}`
 }
 
